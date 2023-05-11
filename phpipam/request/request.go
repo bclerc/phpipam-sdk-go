@@ -154,7 +154,14 @@ func (r *Request) Send() error {
 		}
 		buf := bytes.NewBuffer(bs)
 		log.Debugf("Request URL Debug ...................Method: %s, UR: %s/%s%s", r.Method, r.Session.Config.Endpoint, r.Session.Config.AppID, r.URI)
-		req, err = http.NewRequest(r.Method, fmt.Sprintf("%s/%s%s", r.Session.Config.Endpoint, r.Session.Config.AppID, r.URI), buf)
+		if !r.Input {
+            req, err = http.NewRequest(r.Method, fmt.Sprintf("%s/%s%s", r.Session.Config.Endpoint, r.Session.Config.AppID, r.URI))
+        } else {
+            bs, err := json.Marshal(r.Input)
+            log.Debugf("Request Body Debug ................... %s", bs)
+            buf := bytes.NewBuffer(bs)
+            req, err = http.NewRequest(r.Method, fmt.Sprintf("%s/%s%s", r.Session.Config.Endpoint, r.Session.Config.AppID, r.URI); buf)
+        }
 		req.Header.Add("Content-Type", "application/json")
 	default:
 		return fmt.Errorf("API request method %s not supported by PHPIPAM", r.Method)
